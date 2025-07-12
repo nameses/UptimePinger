@@ -1,20 +1,18 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using UptimePinger.Server.Models;
 
 namespace UptimePinger.Server.Data
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext : IdentityDbContext<User>
     {
-        protected readonly IConfiguration Configuration;
-
-        public AppDbContext(IConfiguration configuration)
+        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
-            Configuration = configuration;
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnConfiguring(optionsBuilder);
-            optionsBuilder.UseNpgsql(Configuration.GetConnectionString("MainSqlDatabase"));
+            base.OnModelCreating(builder);
         }
     }
 }

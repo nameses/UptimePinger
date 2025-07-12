@@ -1,0 +1,66 @@
+services:
+  uptimepinger.server:
+    image: ${DOCKER_REGISTRY-}uptimepingerserver
+    container_name: uptimepinger-server
+    build:
+      context: ./UptimePinger.Server
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+    depends_on:
+      - uptimepinger.db
+      - uptimepinger.seq
+    environment:
+      - ConnectionStrings__DefaultConnection=Host=uptimepinger.db;Port=5432;Database=UptimePinger;Username=postgres;Password=1234
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - backend-net
+
+  uptimepinger.db:
+    image: postgres:17
+    container_name: uptimepinger-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: UptimePinger
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - backend-net
+
+  uptimepinger.seq:
+    image: datalust/seq:latest
+    container_name: uptimepinger-seq
+    environment:
+      - ACCEPT_EULA=Y
+      - SEQ_FIRSTRUN_ADMINPASSWORD=admin123 
+    ports:
+      - "5341:80"      # Inbound ingestion
+      - "5342:5342"    # UI
+    networks:
+      - backend-net
+
+  uptimepinger.client:
+    container_name: uptimepinger-client
+    build:
+      context: ./uptimepinger.client
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_HTTPS_PORT=8080
+    ports:
+      - "4200:80"
+      - "4659:4659"
+    depends_on:
+      - uptimepinger.server
+    networks:
+      - backend-net
+
+volumes:
+  pgdata:
+  seqdata:
+
+networks:
+  backend-net:

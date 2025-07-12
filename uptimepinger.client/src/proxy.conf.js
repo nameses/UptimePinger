@@ -1,7 +1,11 @@
 const { env } = require('process');
 
+if (!env.ASPNETCORE_HTTPS_PORT || !env.ASPNETCORE_URLS) {
+  throw new Error('ASPNETCORE_HTTPS_PORT or ASPNETCORE_URLS environment variable is not set');
+}
+
 const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}` :
-  env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : 'https://localhost:7189';
+  env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : '';
 
 const PROXY_CONFIG = [
   {
@@ -9,7 +13,7 @@ const PROXY_CONFIG = [
       "/weatherforecast",
     ],
     target,
-    secure: false
+    secure: false,
   }
 ]
 
