@@ -10,9 +10,11 @@ services:
     depends_on:
       - uptimepinger.db
       - uptimepinger.seq
+    secrets:
+      - pg_connection_string
     environment:
-      - ConnectionStrings__DefaultConnection=Host=uptimepinger.db;Port=5432;Database=UptimePinger;Username=postgres;Password=1234
-      - ASPNETCORE_ENVIRONMENT=Development
+      ConnectionStrings__DefaultConnection: /run/secrets/pg_connection_string
+      ASPNETCORE_ENVIRONMENT: Development
     networks:
       - backend-net
 
@@ -20,9 +22,12 @@ services:
     image: postgres:17
     container_name: uptimepinger-db
     restart: always
+    secrets:
+      - pg_user
+      - pg_password
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1234
+      POSTGRES_USER: /run/secrets/pg_user
+      POSTGRES_PASSWORD: /run/secrets/pg_password
       POSTGRES_DB: UptimePinger
     ports:
       - "5432:5432"
@@ -34,9 +39,11 @@ services:
   uptimepinger.seq:
     image: datalust/seq:latest
     container_name: uptimepinger-seq
+    secrets:
+      - seq_admin_password
     environment:
-      - ACCEPT_EULA=Y
-      - SEQ_FIRSTRUN_ADMINPASSWORD=admin123 
+      ACCEPT_EULA: Y
+      SEQ_FIRSTRUN_ADMINPASSWORD: /run/secrets/seq_admin_password
     ports:
       - "5341:80"      # Inbound ingestion
       - "5342:5342"    # UI
@@ -49,7 +56,7 @@ services:
       context: ./uptimepinger.client
       dockerfile: Dockerfile
     environment:
-      - ASPNETCORE_HTTPS_PORT=8080
+      ASPNETCORE_HTTPS_PORT: 8080
     ports:
       - "4200:80"
       - "4659:4659"
@@ -64,3 +71,13 @@ volumes:
 
 networks:
   backend-net:
+  
+secrets:
+    pg_connection_string:
+        file: ./secrets/pg_connection_string.txt
+    pg_user:
+        file: ./secrets/pg_user.txt
+    pg_password:
+        file: ./secrets/pg_password.txt
+    seq_admin_password:
+        file: ./secrets/seq_admin_password.txt
