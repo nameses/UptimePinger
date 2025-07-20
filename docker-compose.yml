@@ -60,7 +60,7 @@ services:
       context: ./uptimepinger.client
       dockerfile: Dockerfile
     environment:
-      ASPNETCORE_HTTPS_PORT: 8091
+      ASPNETCORE_HTTPS_PORT: 8081
     ports:
       - "54300:80"
       - "4659:4659"

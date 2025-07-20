@@ -1,5 +1,7 @@
 # Docker secrets
 secrets/
+UptimePinger.Server/appsettings.json
+UptimePinger.Server/appsettings.Development.json
 
 # User-specific files
 *.rsuser

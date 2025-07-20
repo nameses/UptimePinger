@@ -9,7 +9,7 @@ using UptimePinger.Server.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Host.UseSerilog((context, logger) => logger.ReadFrom.Configuration(context.Configuration));
-
+    
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();

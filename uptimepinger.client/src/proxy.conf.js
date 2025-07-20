@@ -1,11 +1,10 @@
 const { env } = require('process');
 
-if (!env.ASPNETCORE_HTTPS_PORT || !env.ASPNETCORE_URLS) {
-  throw new Error('ASPNETCORE_HTTPS_PORT or ASPNETCORE_URLS environment variable is not set');
+if (!env.ASPNETCORE_HTTPS_PORT) {
+  throw new Error('ASPNETCORE_HTTPS_PORT environment variable is not set');
 }
 
-const target = env.ASPNETCORE_HTTPS_PORT ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}` :
-  env.ASPNETCORE_URLS ? env.ASPNETCORE_URLS.split(';')[0] : '';
+const target = env.ASPNETCORE_HTTPS_PORT ? `https://uptimepinger-server:${env.ASPNETCORE_HTTPS_PORT}` : '';
 
 const PROXY_CONFIG = [
   {
@@ -14,6 +13,8 @@ const PROXY_CONFIG = [
     ],
     target,
     secure: false,
+    changeOrigin: true,
+    logLevel: "debug"
   }
 ]
 
